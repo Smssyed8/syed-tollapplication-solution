@@ -15,9 +15,10 @@ syed-tollapplication-solution
 
 #Kept commented code for improvements
 #Improvement and suggestions which can be looked into
+#holidays and time fee list can be specified further better way if required.
+#LinkedHashMap, can be changed to Dtos with Mapper
 #Convert to spring boot api
 #Move constants to properties file
 #configure docker
-#holidays and time fee list can be specified further better way if required.
-#LinkedHashMap, can be changed to Dtos with Mapper
+
 
