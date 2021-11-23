@@ -1,0 +1,10 @@
+holidays:
+
+  #...
+  dates:
+    type: DateTime<'Y-m-d'>
+    array: [detailed]
+  #...
+  dateTime:
+    type: DateTime<'Y-m-d H:i:s'>
+    array: [detailed]

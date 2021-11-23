@@ -1,0 +1,65 @@
+  #used as map, following, hour -> whichHalf -> start,end, fee
+  #can be added one more field, isPeakHour, if true, can default directly to 18
+  "6":
+    "firstHalf":
+            start: "06:00:00"
+            end:  "06:29:59"
+            fee:   "8"
+    "secondHalf":
+            start: "06:30:00"
+            end:   "06:59:59"
+            fee:   "13"
+  "7":
+      "firstHalf":
+            start: "07:00:00"
+            end:   "07:29:59"
+            fee:   "18"
+      "secondHalf":
+            start: "07:30:00"
+            end: "07:59:59"
+            fee: "18"
+  "8":
+      "firstHalf":
+            start: "08:00:00"
+            end: "08:29:59"
+            fee: "13"
+      "secondHalf":
+            start: "08:30:00"
+            end: "08:59:59"
+            fee: "8"
+  "14":
+      "firstHalf":
+            start: "14:00:00"
+            end: "14:29:59"
+            fee: "8"
+      "secondHalf":
+            start: "14:30:00"
+            end: "14:59:59"
+            fee: "8"
+  "15":
+      "firstHalf":
+            start: "15:00:00"
+            end: "15:29:59"
+            fee: "13"
+      "secondHalf":
+            start: "15:30:00"
+            end: "15:59:59"
+            fee: "18"
+  "16":
+      "firstHalf":
+            start: "16:00:00"
+            end: "16:29:59"
+            fee: "18"
+      "secondHalf":
+            start: "16:30:00"
+            end: "16:59:59"
+            fee: "18"
+  "17":
+      "firstHalf":
+            start: "17:00:00"
+            end: "17:29:59"
+            fee: "13"
+      "secondHalf":
+            start: "17:30:00"
+            end: "17:59:59"
+            fee: "8"
