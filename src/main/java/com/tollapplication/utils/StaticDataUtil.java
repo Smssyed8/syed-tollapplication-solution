@@ -87,6 +87,7 @@ public class StaticDataUtil {
         try {
             Object obj = readYamlFile(TIME_FEE_MAP_YAML_FILE);
             if (obj instanceof LinkedHashMap) {
+                //can be mapped to DTO object using mapper
                 Map<String,Map<String,Map<String, String>>> map = (LinkedHashMap) obj;
                 timeFeeMap.putAll(map);
             }
@@ -95,23 +96,26 @@ public class StaticDataUtil {
             throw new TollApplicationException(e.getMessage());
         }
     }
+}
+
 
     /**
      * map to time fee list
      * @param timeFeeString
      * @return
      */
+    /*
     private static TimeFeeDto mapToTimeList(LinkedHashMap<String,String> timeFeeString) {
         return new TimeFeeDto()
                 .setStart(LocalTime.parse(timeFeeString.get("start")))
                 .setEnd(LocalTime.parse(timeFeeString.get("end")))
                 .setFees(Double.valueOf(timeFeeString.get("fee")));
-    }
+    }*/
 
-    /**
-     * load time based fee to list
-     * unused, kept for improvement
-     *//*
+/**
+ * load time based fee to list
+ * unused, kept for improvement
+ *//*
     private static void loadTimeFeeList() {
         try {
             Object obj = readYamlFile(TIME_FEE_YAML_FILE);
@@ -126,4 +130,3 @@ public class StaticDataUtil {
             throw new RuntimeException(e.getMessage());
         }
     }*/
-}
