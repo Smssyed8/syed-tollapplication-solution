@@ -20,7 +20,7 @@ public class GetTimedFeeServiceImpl implements GetTimedFeeService {
       .filter(timeFeeDto -> isWithinTimeList(timeFeeDto, time))
       .findFirst()
       .map(TimeFeeDto::getFees)
-      .orElse(8d);
+      .orElse(0d);
     }
 
     /**
