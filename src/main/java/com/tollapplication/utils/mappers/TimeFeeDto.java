@@ -12,7 +12,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @Accessors(chain = true)
 /**
- * Unused, keep for improvement
+ * Dto for mapping the yml data
  */
 public class TimeFeeDto {
 
