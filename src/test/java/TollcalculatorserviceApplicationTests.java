@@ -143,7 +143,15 @@ class TollcalculatorserviceApplicationTests {
 	public void testDefaultFee() {
 		List<LocalDateTime> dates = new ArrayList<>();
 		dates.add(LocalDateTime.of(date, LocalTime.of(0, 0))); // 0
-		assertEquals(8, tollFeeCalculator.getTollFee(car, dates.toArray(new LocalDateTime[dates.size()])));
+		assertEquals(0, tollFeeCalculator.getTollFee(car, dates.toArray(new LocalDateTime[dates.size()])));
+	}
+
+	@DisplayName("OFF TIME FEE test")
+	@Test
+	public void testOffTimeFee() {
+		List<LocalDateTime> dates = new ArrayList<>();
+		dates.add(LocalDateTime.of(date, LocalTime.of(4, 0))); // 0
+		assertEquals(0, tollFeeCalculator.getTollFee(car, dates.toArray(new LocalDateTime[dates.size()])));
 	}
 
 	@DisplayName("UNORDERED TIME Test")
@@ -184,13 +192,13 @@ class TollcalculatorserviceApplicationTests {
 	public void testPeakTime() {
 		List<LocalDateTime> dates = new ArrayList<>();
 		dates.add(LocalDateTime.of(date, LocalTime.of(6, 50)));//13 skip, check till 7:50, select highest
-		dates.add(LocalDateTime.of(date, LocalTime.of(7, 0)));// 18 select 18
-		dates.add(LocalDateTime.of(date, LocalTime.of(7, 59)));// 18 select 18 + 18 = 36, check till  < 8:59
-		dates.add(LocalDateTime.of(date, LocalTime.of(8, 0)));// 13 skip
-		dates.add(LocalDateTime.of(date, LocalTime.of(8, 29)));//13 skip
+		dates.add(LocalDateTime.of(date, LocalTime.of(7, 0)));// 18 select 8
+		dates.add(LocalDateTime.of(date, LocalTime.of(7, 59)));// 18 -> 18+18=36 check till  < 8.59
+		dates.add(LocalDateTime.of(date, LocalTime.of(8, 0)));// 13 //skip
+		dates.add(LocalDateTime.of(date, LocalTime.of(8, 29)));//13 //skip
 		dates.add(LocalDateTime.of(date, LocalTime.of(8, 30)));//8 //skip
 		dates.add(LocalDateTime.of(date, LocalTime.of(8, 58, 59,59)));//8 //skip
-		dates.add(LocalDateTime.of(date, LocalTime.of(8, 59)));//8 select 36 + 8 =44
+		dates.add(LocalDateTime.of(date, LocalTime.of(8, 59)));//8 select 36 +8 =44
 		assertEquals(44, tollFeeCalculator.getTollFee(car, dates.toArray(new LocalDateTime[dates.size()])));
 
 	}
