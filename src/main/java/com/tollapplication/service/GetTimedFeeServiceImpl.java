@@ -8,7 +8,7 @@ import java.time.LocalTime;
 public class GetTimedFeeServiceImpl implements GetTimedFeeService {
 
     /**
-     * get fee for given time, in parallel, default fee to 8, considering Indian scenario
+     * get fee for given time, in parallel, default fee to 0, Indian scenario would have 8
      * @param time
      * @return
      */
