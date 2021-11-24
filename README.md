@@ -4,7 +4,7 @@ syed-tollapplication-solution
 #Solution
 #Valid vehicle and dates must be supplied
 #Weekends and holidays are free, some vehicles are free to pass
-#Default fee is 8, so there is no 0 fee
+#Default fee is 0, but if Indian scenario taken it would be 8
 #year has to be preconfigured, which can be later moved to system specific year
 #Max fee, within an our is taken, start time is considered as first entry from where next 60 minutes is considered as 1 hour limit
 #Max fee for day is 60
