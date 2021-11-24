@@ -92,7 +92,7 @@ public class TollFeeCalculator {
      * max toll fee is 60 per day
      * if repeated within hour, select higher toll fee
      * skip free vehicles and free days
-     * default fee 8, considering Indian scenario, where there is no 0 fee any time of day
+     * default fee 0, Indian scenario would have 8, where there is no 0 fee any time of day
      * @param list
      * @return
      */
