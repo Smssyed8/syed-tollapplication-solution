@@ -8,9 +8,8 @@ import com.tollapplication.utils.constants.ServiceConstants;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
+import java.util.List;
 import java.util.Arrays;
-import java.util.Map;
-import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import static com.tollapplication.utils.constants.ServiceConstants.MAX_FEE;
@@ -26,6 +25,12 @@ public class TollFeeCalculator {
         this.freePassService = new FreePassServiceImpl();
     }
 
+    /**
+     * validate data passed
+     * @param vehicle
+     * @param dates
+     * @return
+     */
     private boolean isValidData(Vehicle vehicle, LocalDateTime... dates) {
         if (null == vehicle) {
             throw new TollApplicationException(ErrorCodes.INVALID_VEHICLE);
@@ -44,18 +49,19 @@ public class TollFeeCalculator {
         return true;
     }
 
+    /**
+     * Check if free day or free vehicle
+     * @param vehicle
+     * @param dates
+     * @return
+     */
     private boolean isFreePass(Vehicle vehicle, LocalDateTime[] dates) {
-        //we can use this to throw exception with description on
-        //throw new RuntimeException(" " +vehicle.getType()+" " +FREE_VEHICLE);
+        //we can use this to throw exception with description
        return freePassService.isTollFreeVehicle(vehicle) || freePassService.isFreeDay(dates[0].toLocalDate());
     }
 
     /**
-     * Get toll fee based on criterias
-     * max toll fee is 60 per day
-     * if repeated within hour, select higher toll fee
-     * skip free vehicles and free days
-     * default fee 8, considering Indian scenario, where there is no 0 fee any time of day
+     * get Toll Fee, validate data
      * @param vehicle
      * @param dates
      * @return
@@ -65,61 +71,73 @@ public class TollFeeCalculator {
         if(!isValidData(vehicle, dates)) return 0;
         if(isFreePass(vehicle, dates)) return 0;
 
-        //loading all data to map in same stream, to avoid another call to service in next iterations, maintaining O(n)
-        TreeMap<LocalTime, Double> map =  Arrays.stream(dates)
-                .map(time ->  time.toLocalTime())
+        //can use set/Treeset, but use of index is good way for tmpTime, and also Set uses hash internally,
+        //which is extra operation internally, since we only need to iterate all elements in list
+        List<LocalTime> list =  Arrays.stream(dates)
+                .map(LocalDateTime::toLocalTime)
                 .sorted()
                 .distinct()
-                .collect(
-                        Collectors.toMap(
-                                time -> time,
-                                time -> {
-                                    try {
-                                        return getTimedFeeService.getFeeForTime(time);
-                                    } catch (Exception e) {
-                                        throw new TollApplicationException(e.getMessage());
-                                    }
-                                },
-                                (v1,v2) ->{ throw new TollApplicationException(String.format(ErrorCodes.DUPLICATE_KEYS, v1, v2));},
-                                TreeMap::new
-                        ));
+                .collect(Collectors.toList());
 
-        if (map.isEmpty()) {
+        if (list.isEmpty()) {
             return 0;
         }
 
-        Map.Entry<LocalTime, Double> entry = map.entrySet().iterator().next();
-        LocalTime tmpTime = entry.getKey(), currentTime, nextHour;
-        double tmpFee = entry.getValue(), currentFee;
-        double totalFee = tmpFee;
-        nextHour = tmpTime.plusMinutes(ServiceConstants.SIXTY_MINUTES);
+        return calculateTollFee(list);
+    }
 
-        // 6, 50 //13  7, 0 // 13  7, 40 //18  7, 50 //13  7, 59 // 18 skip  18  8, 0 // 13  8, 29 //13 skip  8, 30 //8
-        for (Map.Entry<LocalTime, Double> entryVal: map.entrySet()) {
-            //skipping previousTime comparing
-            if(entryVal.getKey().equals(tmpTime)){
-                continue;
-            }
-            currentTime = entryVal.getKey();
-            currentFee = entryVal.getValue();
-            if(currentTime.isBefore(nextHour)){
-                if(totalFee > 0){
-                    totalFee -= tmpFee;  //0 0 0 18
+    /**
+     * Get toll fee based on criterias
+     * max toll fee is 60 per day
+     * if repeated within hour, select higher toll fee
+     * skip free vehicles and free days
+     * default fee 8, considering Indian scenario, where there is no 0 fee any time of day
+     * @param list
+     * @return
+     */
+    private int calculateTollFee(List<LocalTime> list){
+
+        double totalFee;
+        try{
+            /* Time related variables, temporaryTime, currentTime in iteration, nextHour = currentTime + 60 min*/
+            LocalTime tmpTime = list.get(0);
+            LocalTime nextHour = tmpTime.plusMinutes(ServiceConstants.SIXTY_MINUTES);
+            LocalTime currentTime;
+
+            /* Fee related variables, temporaryFee, totalFee and currentFee in iteration */
+            double tmpFee = getTimedFeeService.getFeeForTime(tmpTime);
+            totalFee = tmpFee;
+            double currentFee;
+
+            for (LocalTime listVal: list) {
+                //skipping tmpTime comparing
+                if(listVal.equals(tmpTime)){
+                    continue;
                 }
-                if(currentFee > tmpFee) {
+
+                currentTime = listVal;
+                currentFee = getTimedFeeService.getFeeForTime(currentTime);
+
+                if(currentTime.isBefore(nextHour)){
+                    if(totalFee > 0){
+                        totalFee -= tmpFee;  //0 0 0 18
+                    }
+                    if(currentFee > tmpFee) {
+                        tmpFee = currentFee;
+                    }
+                } else {
+                    nextHour = currentTime.plusMinutes(ServiceConstants.SIXTY_MINUTES);
                     tmpFee = currentFee;
                 }
-            } else {
-                nextHour = currentTime.plusMinutes(ServiceConstants.SIXTY_MINUTES);
-                tmpFee = currentFee;
-            }
-            //commonolizing
-            tmpTime = currentTime;
-            totalFee += tmpFee;  //13 18 18 36 36 44
 
-            if (totalFee >= MAX_FEE) {
-                return MAX_FEE;
+                //commonolizing and this snippet is for totalFee
+                totalFee += tmpFee;  //13 18 18 36 36 44
+                if (totalFee >= MAX_FEE) {
+                    return MAX_FEE;
+                }
             }
+        } catch(Exception e){
+            throw new TollApplicationException(e.getMessage());
         }
         return Math.min(((int) totalFee), MAX_FEE);
     }
