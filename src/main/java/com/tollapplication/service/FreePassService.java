@@ -7,5 +7,5 @@ public interface FreePassService {
 
     boolean isFreeDay(LocalDate day);
 
-    public boolean isTollFreeVehicle(Vehicle vehicle);
+    boolean isTollFreeVehicle(Vehicle vehicle);
 }
