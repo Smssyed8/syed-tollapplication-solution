@@ -75,6 +75,7 @@ public class TollFeeCalculator {
         //which is extra operation internally, since we only need to iterate all elements in list
         List<LocalTime> list =  Arrays.stream(dates)
                 .map(LocalDateTime::toLocalTime)
+                .filter(time -> getTimedFeeService.getFeeForTime(time) > 0)
                 .sorted()
                 .distinct()
                 .collect(Collectors.toList());
